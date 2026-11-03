@@ -57,7 +57,7 @@ Mapperly é trocar um adapter, sem tocar no caso de uso.
 
 ```bash
 dotnet build PharmaOrders.sln
-dotnet test                                         # 14 testes: domínio, caso de uso e os 4 mappers
+dotnet test                                         # 13 testes: domínio, caso de uso e os 4 mappers
 
 dotnet run --project src/PharmaOrders.Api           # GET http://localhost:5000/orders?mapper=AutoMapper
 
