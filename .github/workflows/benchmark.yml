@@ -1,0 +1,64 @@
+name: mapping-benchmark
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "results/**"
+      - "**.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Build
+        run: dotnet build src/MappingBenchmarks -c Release
+
+      - name: Teste de alto volume (200 mil requisições em paralelo)
+        run: dotnet run -c Release --no-build --project src/MappingBenchmarks -- --throughput --requests 200000 --out results/THROUGHPUT.md
+
+      - name: BenchmarkDotNet (tempo e memória por operação)
+        run: dotnet run -c Release --no-build --project src/MappingBenchmarks -- --filter '*' --exporters github --artifacts ./bdn
+
+      - name: Montar relatório
+        run: |
+          {
+            echo "# Resultado do benchmark de mapeamento"
+            echo
+            echo "Gerado pelo GitHub Actions em $(date -u '+%Y-%m-%d %H:%M') UTC."
+            echo
+            echo "## Tempo e memória por operação (BenchmarkDotNet)"
+            echo
+            echo "\`Orders\` = quantidade de pedidos mapeados por chamada (cada pedido tem 5 itens)."
+            echo
+            sed -n '/^|/,$p' bdn/results/*-report-github.md
+            echo
+            cat results/THROUGHPUT.md | sed 's/^# Teste de alto volume/## Teste de alto volume/'
+          } > results/BENCHMARK.md
+          cat results/BENCHMARK.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit results
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "LuisEduJulio"
+          git config user.email "luiseduardoer38@gmail.com"
+          git add results/
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(bench): resultados do benchmark de mapeamento [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
