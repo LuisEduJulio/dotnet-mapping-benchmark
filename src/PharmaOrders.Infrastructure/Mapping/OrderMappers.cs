@@ -1,12 +1,13 @@
 using AutoMapper;
-using MappingBenchmarks.Domain;
+using PharmaOrders.Application.Orders;
+using PharmaOrders.Domain.Orders;
 using Riok.Mapperly.Abstractions;
 
-namespace MappingBenchmarks.Mappers;
+namespace PharmaOrders.Infrastructure.Mapping;
 
 internal static class StatusNames
 {
-    // switch com nameof: sem reflection e sem alocação (Enum.ToString() aloca e é lento).
+    // switch com nameof: sem reflection e sem alocação (Enum.ToString() é mais caro).
     public static string Of(OrderStatus status) => status switch
     {
         OrderStatus.Created => nameof(OrderStatus.Created),
@@ -20,11 +21,13 @@ internal static class StatusNames
 }
 
 // -------------------------------------------------------------------------------------------
-// 1) MANUAL — método estático escrito à mão. É o "teto" de performance: o código mais direto possível.
+// 1) MANUAL: código escrito à mão. É a referência de performance.
 // -------------------------------------------------------------------------------------------
-public static class ManualMapping
+public sealed class ManualOrderMapper : IOrderMapper
 {
-    public static OrderDto ToDto(Order o)
+    public string Name => "Manual";
+
+    public OrderDto Map(Order o)
     {
         var items = new List<OrderItemDto>(o.Items.Count);
         foreach (var i in o.Items)
@@ -52,17 +55,17 @@ public static class ManualMapping
         };
     }
 
-    public static List<OrderDto> ToDtos(List<Order> orders)
+    public List<OrderDto> MapList(IReadOnlyList<Order> orders)
     {
         var result = new List<OrderDto>(orders.Count);
-        foreach (var o in orders) result.Add(ToDto(o));
+        foreach (var o in orders) result.Add(Map(o));
         return result;
     }
 }
 
 // -------------------------------------------------------------------------------------------
-// 2) CLASSE ABSTRATA — padrão corporativo comum: um MapperBase<TSource, TDest> com métodos
-//    virtuais, injetado por DI pelo tipo base. Custo extra: chamadas virtuais (sem devirtualização).
+// 2) CLASSE ABSTRATA: MapperBase<TSource, TDest> com métodos virtuais, padrão comum para
+//    "padronizar" mappers no time. Custo extra: chamadas virtuais em cada item.
 // -------------------------------------------------------------------------------------------
 public abstract class MapperBase<TSource, TDest>
 {
@@ -88,8 +91,11 @@ public sealed class OrderItemAbstractMapper : MapperBase<OrderItem, OrderItemDto
     };
 }
 
-public sealed class OrderAbstractMapper(MapperBase<OrderItem, OrderItemDto> itemMapper) : MapperBase<Order, OrderDto>
+public sealed class AbstractClassOrderMapper(MapperBase<OrderItem, OrderItemDto> itemMapper)
+    : MapperBase<Order, OrderDto>, IOrderMapper
 {
+    public string Name => "Classe abstrata";
+
     public override OrderDto Map(Order o) => new()
     {
         Id = o.Id,
@@ -104,12 +110,14 @@ public sealed class OrderAbstractMapper(MapperBase<OrderItem, OrderItemDto> item
 }
 
 // -------------------------------------------------------------------------------------------
-// 3) AUTOMAPPER 14 — convenção + reflection na configuração, expressões compiladas no runtime.
-//    Achata CustomerName -> Customer.Name sozinho e converte enum -> string com ToString().
+// 3) AUTOMAPPER 14: convenção + reflection na configuração e expressões compiladas no runtime.
+//    Achata CustomerName -> Customer.Name sozinho e converte enum em texto.
 // -------------------------------------------------------------------------------------------
-public static class AutoMapperSetup
+public sealed class AutoMapperOrderMapper : IOrderMapper
 {
-    public static IMapper Create()
+    private readonly IMapper _mapper;
+
+    public AutoMapperOrderMapper()
     {
         var config = new MapperConfiguration(cfg =>
         {
@@ -117,21 +125,27 @@ public static class AutoMapperSetup
             cfg.CreateMap<OrderItem, OrderItemDto>();
         });
         config.AssertConfigurationIsValid();
-        return config.CreateMapper();
+        _mapper = config.CreateMapper();
     }
+
+    public string Name => "AutoMapper 14";
+    public OrderDto Map(Order order) => _mapper.Map<OrderDto>(order);
+    public List<OrderDto> MapList(IReadOnlyList<Order> orders) => _mapper.Map<List<OrderDto>>(orders);
 }
 
 // -------------------------------------------------------------------------------------------
-// 4) MAPPERLY — source generator: o código de mapeamento é GERADO NA COMPILAÇÃO.
-//    Zero reflection no runtime, enum -> string vira switch, e erro de mapeamento vira warning de build.
+// 4) MAPPERLY: source generator. O código de mapeamento é GERADO NA COMPILAÇÃO:
+//    sem reflection no runtime e erro de mapeamento vira aviso de build.
 // -------------------------------------------------------------------------------------------
 [Mapper]
-public static partial class MapperlyMapping
+public sealed partial class MapperlyOrderMapper : IOrderMapper
 {
+    public string Name => "Mapperly";
+
     [MapProperty("Customer.Name", nameof(OrderDto.CustomerName))]
     [MapProperty("Customer.City", nameof(OrderDto.CustomerCity))]
     [MapProperty("Customer.Uf", nameof(OrderDto.CustomerUf))]
-    public static partial OrderDto ToDto(Order order);
+    public partial OrderDto Map(Order order);
 
-    public static partial List<OrderDto> ToDtos(List<Order> orders);
+    public partial List<OrderDto> MapList(IReadOnlyList<Order> orders);
 }

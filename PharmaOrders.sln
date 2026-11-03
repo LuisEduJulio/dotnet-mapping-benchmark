@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{30297070-D959-42EA-BF11-CAF54B797271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Domain", "src\PharmaOrders.Domain\PharmaOrders.Domain.csproj", "{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Application", "src\PharmaOrders.Application\PharmaOrders.Application.csproj", "{298AFE8B-C7FD-48D6-B101-029610F0C29B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Infrastructure", "src\PharmaOrders.Infrastructure\PharmaOrders.Infrastructure.csproj", "{527B5287-9118-40A3-8150-D33C4A78EE56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Api", "src\PharmaOrders.Api\PharmaOrders.Api.csproj", "{18172E92-A968-45ED-9347-C6E13BC287B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{710E94B6-1B75-4FEC-804C-4080DDFDE76E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Tests", "tests\PharmaOrders.Tests\PharmaOrders.Tests.csproj", "{9FEDAE9F-7768-4639-9556-796F027A56E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{4376653A-A726-4351-8CD0-29183FFA291E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PharmaOrders.Benchmarks", "benchmarks\PharmaOrders.Benchmarks\PharmaOrders.Benchmarks.csproj", "{9AAB9744-31D9-4F47-B27B-DE54B1BF406F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{298AFE8B-C7FD-48D6-B101-029610F0C29B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{298AFE8B-C7FD-48D6-B101-029610F0C29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{298AFE8B-C7FD-48D6-B101-029610F0C29B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{298AFE8B-C7FD-48D6-B101-029610F0C29B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{527B5287-9118-40A3-8150-D33C4A78EE56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{527B5287-9118-40A3-8150-D33C4A78EE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{527B5287-9118-40A3-8150-D33C4A78EE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{527B5287-9118-40A3-8150-D33C4A78EE56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18172E92-A968-45ED-9347-C6E13BC287B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18172E92-A968-45ED-9347-C6E13BC287B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18172E92-A968-45ED-9347-C6E13BC287B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18172E92-A968-45ED-9347-C6E13BC287B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FEDAE9F-7768-4639-9556-796F027A56E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FEDAE9F-7768-4639-9556-796F027A56E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FEDAE9F-7768-4639-9556-796F027A56E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FEDAE9F-7768-4639-9556-796F027A56E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AAB9744-31D9-4F47-B27B-DE54B1BF406F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AAB9744-31D9-4F47-B27B-DE54B1BF406F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AAB9744-31D9-4F47-B27B-DE54B1BF406F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AAB9744-31D9-4F47-B27B-DE54B1BF406F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FFBE6A8C-7AB0-4C07-A458-6609BE84ABD9} = {30297070-D959-42EA-BF11-CAF54B797271}
+		{298AFE8B-C7FD-48D6-B101-029610F0C29B} = {30297070-D959-42EA-BF11-CAF54B797271}
+		{527B5287-9118-40A3-8150-D33C4A78EE56} = {30297070-D959-42EA-BF11-CAF54B797271}
+		{18172E92-A968-45ED-9347-C6E13BC287B8} = {30297070-D959-42EA-BF11-CAF54B797271}
+		{9FEDAE9F-7768-4639-9556-796F027A56E3} = {710E94B6-1B75-4FEC-804C-4080DDFDE76E}
+		{9AAB9744-31D9-4F47-B27B-DE54B1BF406F} = {4376653A-A726-4351-8CD0-29183FFA291E}
+	EndGlobalSection
+EndGlobal

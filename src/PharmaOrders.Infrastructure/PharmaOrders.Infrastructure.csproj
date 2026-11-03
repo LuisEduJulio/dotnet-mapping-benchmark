@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Mapperly avisa sobre membros não mapeados (ex.: ProductId, Email, Total calculado); é intencional. -->
+    <NoWarn>$(NoWarn);RMG012;RMG020</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 14.x é a última versão MIT. A partir da 15 o AutoMapper exige licença comercial (Lucky Penny Software). -->
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Riok.Mapperly" Version="4.*" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PharmaOrders.Application\PharmaOrders.Application.csproj" />
+  </ItemGroup>
+
+</Project>

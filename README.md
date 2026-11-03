@@ -35,11 +35,34 @@ Antes de medir, o programa confere que **as 4 implementações geram exatamente 
    Mede tempo total, requisições/s, memória alocada, coletas do Garbage Collector e tempo de pausa do GC.
    Em produção, **alocação vira coleta de lixo, e coleta vira latência** para todo mundo.
 
+## Arquitetura (DDD + Clean Architecture)
+
+```
+PharmaOrders.sln
+├── src
+│   ├── PharmaOrders.Domain           Aggregate Order, Customer, OrderItem (value object), regras e DomainException
+│   ├── PharmaOrders.Application      DTOs, portas IOrderMapper / IOrderRepository, caso de uso ListOrdersHandler
+│   ├── PharmaOrders.Infrastructure   4 adapters de IOrderMapper (Manual, Classe abstrata, AutoMapper, Mapperly),
+│   │                                 repositório em memória e DependencyInjection
+│   └── PharmaOrders.Api              Minimal API: GET /orders?mapper=Mapperly
+├── tests/PharmaOrders.Tests          domínio, caso de uso e equivalência dos 4 mappers (xUnit)
+└── benchmarks/PharmaOrders.Benchmarks BenchmarkDotNet + teste de alto volume
+```
+
+As dependências apontam para dentro: `Api → Infrastructure → Application → Domain`. O domínio não conhece
+DTO nem biblioteca de mapeamento, e a Application só conhece a **porta** `IOrderMapper`. Trocar AutoMapper por
+Mapperly é trocar um adapter, sem tocar no caso de uso.
+
 ## Como rodar
 
 ```bash
-dotnet run -c Release --project src/MappingBenchmarks -- --throughput --requests 200000
-dotnet run -c Release --project src/MappingBenchmarks -- --filter '*'
+dotnet build PharmaOrders.sln
+dotnet test                                         # 14 testes: domínio, caso de uso e os 4 mappers
+
+dotnet run --project src/PharmaOrders.Api           # GET http://localhost:5000/orders?mapper=AutoMapper
+
+dotnet run -c Release --project benchmarks/PharmaOrders.Benchmarks -- --throughput --requests 200000
+dotnet run -c Release --project benchmarks/PharmaOrders.Benchmarks -- --filter '*'
 ```
 
 ## O que levar para aplicações com alto volume
