@@ -16,6 +16,40 @@ Pedido de uma rede de farmácias → `OrderDto` da API:
 
 Antes de medir, o programa confere que **as 4 implementações geram exatamente o mesmo JSON**.
 
+## 🏆 Resultado: quem deixa a API mais rápida
+
+Teste de alto volume (200 mil requisições em paralelo, mediana de 5 rodadas) e BenchmarkDotNet com 100 pedidos.
+Números do GitHub Actions (AMD EPYC 7763, 4 vCPU, .NET 8); log completo em
+[`results/benchmarkdotnet-log.txt`](results/benchmarkdotnet-log.txt).
+
+| Posição | Solução | Requisições/s | vs. manual | 100 pedidos (µs) | Memória (alto volume) |
+|---|---|---:|---:|---:|---:|
+| 1º | ✍️ Manual | **724.458** | referência | **17,9** | 2.368 MB |
+| 1º | ⚡ Mapperly | 721.959 | empate (−0,3%) | **17,9** | 2.368 MB |
+| 3º | 🧱 Classe abstrata | 668.362 | −8% | 20,6 (1,15x) | 2.368 MB |
+| 4º | 🔁 AutoMapper 14 | 402.987 | **−44%** | 29,1 (1,63x) | **2.832 MB (+20%)** |
+
+Com 1 pedido o AutoMapper levou **1,94x** o tempo do manual; com 1.000 pedidos o Mapperly ficou **3% à frente**
+do manual.
+
+### Cada solução, sem rodeio
+
+- **⚡ Mapperly:** o mais equilibrado. Velocidade de código manual sem escrever código manual: o mapeamento é
+  gerado na compilação, sem reflection, e um campo esquecido vira aviso no build.
+- **✍️ Manual:** tão rápido quanto e com controle total. O preço é código repetitivo, e um campo esquecido não avisa ninguém.
+- **🧱 Classe abstrata:** boa para padronizar e testar no time. Perde de 8% a 15% por causa das chamadas virtuais.
+- **🔁 AutoMapper:** menos código no começo, mas é o mais lento (1,5x a 2x) e o que mais aloca. Erro de
+  configuração só aparece em runtime, e da v15 em diante a licença é paga para empresas maiores.
+
+### Quando usar cada uma
+
+| Situação | Recomendação |
+|---|---|
+| Endpoint com muito acesso | Mapperly ou manual |
+| Time grande que precisa de padrão | Mapperly: padroniza sem perder performance |
+| CRUD interno com pouco acesso | qualquer uma resolve; a diferença só pesa com volume |
+| Leitura vinda do banco | melhor ainda: `Select` direto para DTO, sem carregar a entidade |
+
 ## As implementações
 
 | | Como funciona | Prós | Contras |
